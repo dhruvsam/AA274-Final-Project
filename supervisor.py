@@ -30,13 +30,13 @@ ANIMAL_MIN_DIST = 5000
 # time taken to cross an intersection
 CROSSING_TIME = 6
 
-#time taken to cross a detected animal 
+#time taken to cross a detected animal
 ANIMAL_CROSSING_TIME = 6
 
 #nubmer of animals to rescue
 NUM_ANIMAL_TO_RESCUE = 2
 
-#Time to wait for recording origin location 
+#Time to wait for recording origin location
 WAIT_FOR_ORIGIN_TIME = 5
 
 # state machine modes, not all implemented
@@ -95,8 +95,8 @@ class Supervisor:
 
     def rescue_callback(self, msg):
         if self.mode == Mode.WAIT_FOR_HANDSHAKE:
-            if msg.data: 
-                rospy.loginfo("HANDSHAKE RECEIVED") 
+            if msg.data:
+                rospy.loginfo("HANDSHAKE RECEIVED")
                 self.mode = Mode.NAV
 
     def rviz_goal_callback(self, msg):
@@ -113,7 +113,7 @@ class Supervisor:
     def stop_sign_detected_callback(self, msg):
         """ callback for when the detector has found a stop sign. Note that
         a distance of 0 can mean that the lidar did not pickup the stop sign at all """
-        
+
         y_min = msg.corners[0]
         y_max = msg.corners[2]
         x_min = msg.corners[1]
@@ -140,10 +140,10 @@ class Supervisor:
         boxArea = (x_max - x_min) * (y_max - y_min)
         rospy.loginfo("ANIMAL AREA: %f", boxArea)
 
-	dist = math.sqrt(boxArea) * 0.0025 #need to calibrate this number 
+	dist = math.sqrt(boxArea) * 0.0025 #need to calibrate this number
 	dist = 1/dist
 	rospy.loginfo("Predicted dist: %f",dist)
-         
+
         # if close enough and in nav mode, stop
         if boxArea > ANIMAL_MIN_DIST and self.mode == Mode.EXP:
             self.goal_list.append((self.x, self.y, self.theta))
@@ -191,7 +191,7 @@ class Supervisor:
         """ checks if the robot is at a pose within some threshold """
 
         return (abs(x-self.x)<POS_EPS and abs(y-self.y)<POS_EPS and abs(theta-self.theta)<THETA_EPS)
-        
+
 
     def init_stop_sign(self):
         """ initiates a stop sign maneuver """
@@ -250,11 +250,11 @@ class Supervisor:
             self.last_mode_printed = self.mode
 
         # checks wich mode it is in and acts accordingly
-        if self.mode == Mode.WAIT_FOR_ORIGIN: 
+        if self.mode == Mode.WAIT_FOR_ORIGIN:
             self.stay_idle()
 
-            if (rospy.get_rostime()-self.originWaitTime_start)>rospy.Duration.from_sec(WAIT_FOR_ORIGIN_TIME):                                           
-                self.mode = Mode.EXP 
+            if (rospy.get_rostime()-self.originWaitTime_start)>rospy.Duration.from_sec(WAIT_FOR_ORIGIN_TIME):
+                self.mode = Mode.EXP
 
 
         elif self.mode == Mode.IDLE:
@@ -316,7 +316,7 @@ class Supervisor:
                 rospy.loginfo("Num of animals: %d", len(self.goal_list))
             if len(self.goal_list) == NUM_ANIMAL_TO_RESCUE + 1:
 
-                rospy.loginfo("ALL ANIMALS FOUND") 
+                rospy.loginfo("ALL ANIMALS FOUND")
                 self.x_g = self.goal_list[0][0]
                 self.y_g = self.goal_list[0][1]
                 self.theta_g = self.goal_list[0][2]
@@ -340,9 +340,9 @@ class Supervisor:
                 self.nav_to_pose()
 
         elif self.mode == Mode.WAIT_FOR_HANDSHAKE:
-            rospy.loginfo("WAITING FOR HANDSHAKE...") 
+            rospy.loginfo("WAITING FOR HANDSHAKE...")
             self.wait_for_handshake_publisher.publish(True) #change this maybe
-            
+
 
         else:
             raise Exception('This mode is not supported: %s'
@@ -357,5 +357,3 @@ class Supervisor:
 if __name__ == '__main__':
     sup = Supervisor()
     sup.run()
-
-

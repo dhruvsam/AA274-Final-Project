@@ -13,25 +13,18 @@ def Field_callback(data):
 		pub.publish(True)
 	else:
 		rospy.loginfo('Wrong value received on /ready_to_rescue, sending a False on /rescue_on topic:')
-		pub.publish(False)	
+		pub.publish(False)
 
 
-def FieldOperator(): 
+def FieldOperator():
 	rospy.init_node('FieldTestNode', anonymous=True)
 	pub = rospy.Publisher('/rescue_on', Bool, queue_size = 10)
 	rospy.Subscriber('/ready_to_rescue', Bool, Field_callback)
-	rospy.loginfo("Field tester node initialized ")	
+	rospy.loginfo("Field tester node initialized ")
 	rospy.spin()
 
-	# rate = rospy.Rate(1)
-	# while not rospy.is_shutdown():
-	# 	## publishs a string
-	# 	#msg = "hello"
-	# 	msg = True
-	# 	pub.publish(msg)
-	# 	rate.sleep()
+
 
 
 if __name__ == '__main__':
-    FieldOperator()    
-
+    FieldOperator()

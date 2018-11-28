@@ -34,12 +34,7 @@ class Controller:
         self.theta = euler[2]
 
     def get_ctrl_output(self):
-        # use self.x self.y and self.theta to 
 	# compute the right control input here
-	
-	### YOUR CODE HERE ###
-
-	### END OF YOUR CODE ###        
 
         cmd = Twist()
         cmd.linear.x = cmd_x_dot

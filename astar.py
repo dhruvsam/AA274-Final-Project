@@ -28,9 +28,6 @@ class AStar(object):
 
     # Checks if a give state is free, meaning it is inside the bounds of the map and
     # is not inside any obstacle
-    # INPUT: (x)
-    #          x - tuple state
-    # OUTPUT: Boolean True/False
     def is_free(self, x):
         if x==self.x_init or x==self.x_goal:
             return True
@@ -44,35 +41,15 @@ class AStar(object):
         return True
 
     # computes the euclidean distance between two states
-    # INPUT: (x1, x2)
-    #          x1 - first state tuple
-    #          x2 - second state tuple
-    # OUTPUT: Float euclidean distance
     def distance(self, x1, x2):
         return np.linalg.norm(np.array(x1)-np.array(x2))
 
     # returns the closest point on a discrete state grid
-    # INPUT: (x)
-    #          x - tuple state
-    # OUTPUT: A tuple that represents the closest point to x on the discrete state grid
     def snap_to_grid(self, x):
         return (self.resolution*round(x[0]/self.resolution), self.resolution*round(x[1]/self.resolution))
 
-    # gets the FREE neighbor states of a given state. Assumes a motion model
-    # where we can move up, down, left, right, or along the diagonals by an
-    # amount equal to self.resolution.
-    # Use self.is_free in order to check if any given state is indeed free.
-    # Use self.snap_to_grid (see above) to ensure that the neighbors you compute
-    # are actually on the discrete grid, i.e., if you were to compute neighbors by
-    # simply adding/subtracting self.resolution from x, numerical error could
-    # creep in over the course of many additions and cause grid point equality
-    # checks to fail. To remedy this, you should make sure that every neighbor is
-    # snapped to the grid as it is computed.
-    # INPUT: (x)
-    #           x - tuple state
-    # OUTPUT: List of neighbors that are free, as a list of TUPLES
+
     def get_neighbors(self, x):
-        # TODO: fill me in!
         neighbours = []
         for i in range(-1,2):
             for j in range(-1,2):
@@ -83,15 +60,11 @@ class AStar(object):
         return neighbours
 
     # Gets the state in open_set that has the lowest f_score
-    # INPUT: None
-    # OUTPUT: A tuple, the state found in open_set that has the lowest f_score
     def find_best_f_score(self):
         return min(self.open_set, key=lambda x: self.f_score[x])
 
     # Use the came_from map to reconstruct a path from the initial location
     # to the goal location
-    # INPUT: None
-    # OUTPUT: A list of tuples, which is a list of the states that go from start to goal
     def reconstruct_path(self):
         path = [self.x_goal]
         current = path[-1]
@@ -101,8 +74,6 @@ class AStar(object):
         return list(reversed(path))
 
     # Plots the path found in self.path and the obstacles
-    # INPUT: None
-    # OUTPUT: None
     def plot_path(self):
         if not self.path:
             return
@@ -124,8 +95,6 @@ class AStar(object):
     # Solves the planning problem using the A* search algorithm. It places
     # the solution as a list of of tuples (each representing a state) that go
     # from self.x_init to self.x_goal inside the variable self.path
-    # INPUT: None
-    # OUTPUT: Boolean, True if a solution from x_init to x_goal was found
     def solve(self):
         while len(self.open_set)>0:
             print("here")
@@ -180,40 +149,3 @@ class DetOccupancyGrid2D(object):
             obs[0],
             obs[1][0]-obs[0][0],
             obs[1][1]-obs[0][1],))
-
-### TESTING
-
-# A simple example
-#width = 10
-#height = 10
-#x_init = (0,0)
-#x_goal = (8,8)
-#obstacles = [((6,6),(8,7)),((2,1),(4,2)),((2,4),(4,6)),((6,2),(8,4))]
-#occupancy = DetOccupancyGrid2D(width, height, obstacles)
-
-# A large random example
-# width = 101
-# height = 101
-# num_obs = 15
-# min_size = 5
-# max_size = 25
-# obs_corners_x = np.random.randint(0,width,num_obs)
-# obs_corners_y = np.random.randint(0,height,num_obs)
-# obs_lower_corners = np.vstack([obs_corners_x,obs_corners_y]).T
-# obs_sizes = np.random.randint(min_size,max_size,(num_obs,2))
-# obs_upper_corners = obs_lower_corners + obs_sizes
-# obstacles = zip(obs_lower_corners,obs_upper_corners)
-# occupancy = DetOccupancyGrid2D(width, height, obstacles)
-# x_init = tuple(np.random.randint(0,width-2,2).tolist())
-# x_goal = tuple(np.random.randint(0,height-2,2).tolist())
-# while not (occupancy.is_free(x_init) and occupancy.is_free(x_goal)):
-#     x_init = tuple(np.random.randint(0,width-2,2).tolist())
-#     x_goal = tuple(np.random.randint(0,height-2,2).tolist())
-
-#astar = AStar((0, 0), (width, height), x_init, x_goal, occupancy)
-
-#if not astar.solve():
- #   print "No path found"
-  #  exit(0)
-
-#astar.plot_path()

@@ -42,7 +42,7 @@ class EKF_SLAM_Visualizer:
 
     def __init__(self):
         rospy.init_node('turtlebot_mapping')
-        
+
         ## Use simulation time (i.e. get time from rostopic /clock)
         rospy.set_param('use_sim_time', 'true')
         rate = rospy.Rate(10)
@@ -192,7 +192,7 @@ class EKF_SLAM_Visualizer:
                     tf.transformations.quaternion_from_euler(0, 0, self.OLC.x[2]),
                     "open_loop", "world", self.EKF_time)
                 )
-            
+
             scan_time, theta, rho = self.scans.popleft()
             if scan_time < self.EKF_time:
                 continue
